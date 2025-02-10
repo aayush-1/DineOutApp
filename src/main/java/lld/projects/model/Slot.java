@@ -1,15 +1,15 @@
 package lld.projects.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Slot {
     int slotId;
-    LocalDateTime slotStartTime;
+    LocalTime slotStartTime;
     List<Table> bookedTables = new ArrayList<>();
 
-    public Slot(int slotId, LocalDateTime localDateTime) {
+    public Slot(int slotId, LocalTime localDateTime) {
         this.slotId = slotId;
         this.slotStartTime = localDateTime;
     }
@@ -22,11 +22,11 @@ public class Slot {
         this.slotId = slotId;
     }
 
-    public LocalDateTime getSlotStartTime() {
+    public LocalTime getSlotStartTime() {
         return slotStartTime;
     }
 
-    public void setSlotStartTime(LocalDateTime slotStartTime) {
+    public void setSlotStartTime(LocalTime slotStartTime) {
         this.slotStartTime = slotStartTime;
     }
 

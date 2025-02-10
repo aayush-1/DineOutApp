@@ -9,6 +9,7 @@ import lld.projects.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class DineOutApp {
 
     private void addSlotsAndTablesForRestaurant(Restaurant restaurant) {
         List<Slot> slots = new ArrayList<>();
-        LocalDateTime startTime = LocalDateTime.now().withHour(11).withMinute(0).withSecond(0); // Start at 11 AM
+        LocalTime startTime = LocalTime.of(11,0); // Start at 11 AM
 
         for (int i = 0; i < 10; i++) { // Create 10 slots
             slots.add(new Slot(i + 1, startTime.plusHours(i)));
@@ -73,7 +74,7 @@ public class DineOutApp {
 
         List<Table> tables = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) { // Create 10 slots
+        for (int i = 0; i < 2; i++) { // Create 10 slots
             tables.add(new Table(i + 1));
         }
 
