@@ -10,6 +10,10 @@ import lld.projects.model.User;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
@@ -71,6 +75,60 @@ public class Main {
         dineOutApp.bookRestaurant(restaurants.get(1), user3, slots.get(0), 6, LocalDate.now().plusDays(2));
         dineOutApp.bookRestaurant(restaurants.get(1), user3, slots.get(0), 6, LocalDate.now().plusDays(6));
         dineOutApp.bookRestaurant(restaurants.get(1), user3, slots.get(0), 6, LocalDate.now().plusDays(31));
+
+
+
+        // Concurrency Check:
+        slots = dineOutApp.getFreeSlots(restaurants.get(0), LocalDate.now());
+        Restaurant restaurant = restaurants.get(0);
+        Slot slot = slots.get(0);
+
+        // Use an ExecutorService to manage threads
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        Runnable task1 = () -> {
+            try {
+                dineOutApp.bookRestaurant(restaurant, user, slot, 4, LocalDate.now());
+            } catch (Exception e) {
+                System.out.println("User 1 failed: " + e.getMessage());
+            }
+        };
+
+        Runnable task2 = () -> {
+            try {
+                Thread.sleep(200);
+                dineOutApp.bookRestaurant(restaurant, user2, slot, 4, LocalDate.now());
+            } catch (Exception e) {
+                System.out.println("User 2 failed: " + e.getMessage());
+            }
+        };
+
+        Runnable task3 = () -> {
+            try {
+                dineOutApp.bookRestaurant(restaurant, user3, slot, 4, LocalDate.now());
+            } catch (Exception e) {
+                System.out.println("User 3 failed: " + e.getMessage());
+            }
+        };
+
+        // Run all tasks in parallel
+        executor.execute(task1);
+        executor.execute(task2);
+        executor.execute(task3);
+
+
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                System.out.println("Some tasks did not finish in time, forcing shutdown...");
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Thread interrupted while waiting for termination.");
+            executor.shutdownNow();
+        }
+
+
+
 
         List<Booking> bookings = dineOutApp.getBookingsForUser(user);
 

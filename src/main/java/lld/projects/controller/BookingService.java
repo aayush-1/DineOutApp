@@ -2,14 +2,18 @@ package lld.projects.controller;
 
 import lld.projects.model.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class BookingService {
     List<Booking> bookings = new ArrayList<>();
     private static final int MAX_DAYS_IN_FUTURE = 30;
+
+
+    private final Map<String, Object> locks = new ConcurrentHashMap<>();
 
     public boolean bookTable(User user, Restaurant restaurant, Slot slot, int numberOfPeople, LocalDate bookingDate) {
         if (bookingDate.isAfter(LocalDate.now().plusDays(MAX_DAYS_IN_FUTURE))) {
@@ -24,21 +28,26 @@ public class BookingService {
             }
         }
 
-        // Book table
+        // Generate a unique lock key for (restaurant, slot, date)
+        String lockKey = restaurant.getRestaurantId() + "-" + slot.getSlotId() + "-" + bookingDate;
+        locks.putIfAbsent(lockKey, new Object());
 
-        Table table = findEmptyTable(restaurant, slot, bookingDate);
-        if(table ==  null)
-        {
-            System.out.println("Booking failed");
-            return false;
+        synchronized (locks.get(lockKey)) {
+            Table table = findEmptyTable(restaurant, slot, bookingDate);
+            if (table == null) {
+                System.out.println("Booking failed - No table available");
+                return false;
+            }
+
+            Booking newBooking = new Booking(bookings.size() + 1, user, restaurant, slot, table, numberOfPeople, bookingDate);
+            bookings.add(newBooking);
+            slot.addBookedTable(table);
+            // print the booking details wirh restaurant anme and slot id and date and user name etc
+
+
+            System.out.println("Booking successful: " + newBooking.getBookingId() + "  RestaurantName:" + newBooking.getRestaurant().getRestaurantName() + "  SlotID:" + newBooking.getSlot().getSlotId() + "  BookingDate:" + newBooking.getBookingDate() + "  UserName:" + newBooking.getUser().getUserName() );
+            return true;
         }
-
-        Booking newBooking = new Booking(bookings.size() + 1, user, restaurant, slot, table, numberOfPeople, bookingDate);
-        bookings.add(newBooking);
-        slot.addBookedTable(table);
-
-        System.out.println("Booking successful: " + newBooking.getBookingId());
-        return true;
     }
 
     private Table findEmptyTable(Restaurant restaurant, Slot slot, LocalDate date) {
