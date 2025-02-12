@@ -18,7 +18,6 @@ public class Restaurant {
     private RestaurantType type;
     List<Table> tables = new ArrayList<>();
     List<Slot> slots = new ArrayList<>();
-    List<Booking> bookings;
 
     public Restaurant(int restaurantId, String restaurantName, String address, City city,
                       List<Cuisine> cuisines, double costForTwo, RestaurantType type) {
@@ -117,13 +116,5 @@ public class Restaurant {
 
     public void removeSlot(Slot slot) {
         this.slots.remove(slot);
-    }
-
-    public void addBookings(Booking booking) {
-        this.bookings.add(booking);
-    }
-
-    public void removeBookings(Booking booking) {
-        this.bookings.remove(booking);
     }
 }

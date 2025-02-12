@@ -96,7 +96,6 @@ public class Main {
 
         Runnable task2 = () -> {
             try {
-                Thread.sleep(200);
                 dineOutApp.bookRestaurant(restaurant, user2, slot, 4, LocalDate.now());
             } catch (Exception e) {
                 System.out.println("User 2 failed: " + e.getMessage());

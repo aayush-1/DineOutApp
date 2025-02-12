@@ -28,7 +28,6 @@ public class BookingService {
             }
         }
 
-        // Generate a unique lock key for (restaurant, slot, date)
         String lockKey = restaurant.getRestaurantId() + "-" + slot.getSlotId() + "-" + bookingDate;
         locks.putIfAbsent(lockKey, new Object());
 
